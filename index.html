@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة الخبير | الأستاذ عبد المنعم رجب</title>
+<!-- استيراد خطوط جوجل الحديثة Cairo & Tajawal -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ==========================================
+      1. أنظمة الألوان ومتغيرات السمات (Dark / Light)
+      ================================---------- */
+  :root[data-theme="dark"] {
+    --bg-main: #0B0F19;        
+    --bg-card: #131C2E;        
+    --bg-card-hover: #1A2640;   
+    --border-color: #21324E;    
+    --primary: #4F46E5;         
+    --primary-glow: rgba(79, 70, 229, 0.2); 
+    --primary-gradient: linear-gradient(135deg, #6366F1 0%, #4F46E5 50%, #3730A3 100%); 
+    --text-main: #F1F5F9;       
+    --text-muted: #8FA2BC;      
+    --success: #10B981;         
+    --success-bg: rgba(16, 185, 129, 0.12);
+    --danger: #EF4444;          
+    --danger-bg: rgba(239, 68, 68, 0.12);
+    --warning: #F59E0B;
+    --warning-bg: rgba(245, 158, 11, 0.12);
+    --radius-lg: 20px;          
+    --radius-md: 12px;          
+    --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.5); 
+  }
+
+  :root[data-theme="light"] {
+    --bg-main: #F8FAFC;        
+    --bg-card: #FFFFFF;        
+    --bg-card-hover: #F1F5F9;   
+    --border-color: #E2E8F0;    
+    --primary: #4F46E5;         
+    --primary-glow: rgba(79, 70, 229, 0.15); 
+    --primary-gradient: linear-gradient(135deg, #6366F1 0%, #4F46E5 50%, #3730A3 100%); 
+    --text-main: #0F172A;       
+    --text-muted: #64748B;      
+    --success: #10B981;         
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --danger: #EF4444;          
+    --danger-bg: rgba(239, 68, 68, 0.1);
+    --warning: #D97706;
+    --warning-bg: rgba(245, 158, 11, 0.1);
+    --radius-lg: 20px;          
+    --radius-md: 12px;          
+    --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.08); 
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  html, body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, .brand-title { font-family: 'Cairo', sans-serif; }
+  button, input, select { font-family: 'Tajawal', sans-serif; outline: none; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px; background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .brand-wrap { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    width: 46px; height: 46px; border-radius: var(--radius-md);
+    background: var(--primary-gradient); display: flex; align-items: center;
+    justify-content: center; font-family: 'Cairo', sans-serif; font-weight: 900;
+    color: #fff; font-size: 22px; box-shadow: 0 4px 15px var(--primary-glow);
+  }
+  .brand-title { font-size: 20px; font-weight: 900; }
+  .brand-subtitle { font-size: 12px; color: var(--text-muted); }
+
+  .top-actions { display: flex; align-items: center; gap: 12px; }
+  .user-badge {
+    display: flex; align-items: center; gap: 8px; background: var(--bg-main);
+    border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 999px;
+    font-size: 14px; color: var(--text-muted);
+  }
+  .user-badge b { color: var(--text-main); }
+
+  .btn-icon {
+    width: 40px; height: 40px; border-radius: var(--radius-md);
+    border: 1px solid var(--border-color); background: var(--bg-main);
+    color: var(--text-main); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px; transition: all 0.2s ease;
+  }
+  .btn-icon:hover { border-color: var(--primary); }
+
+  .btn-ghost {
+    background: transparent; border: 1px solid var(--border-color);
+    color: var(--text-muted); padding: 8px 16px; border-radius: var(--radius-md);
+    font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-ghost:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+  .container { max-width: 1150px; margin: 0 auto; padding: 40px 20px 60px; flex: 1; width: 100%; }
+  .footer { text-align: center; padding: 20px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px; font-weight: 700; letter-spacing: 1px; background: var(--bg-card); margin-top: auto; }
+
+  .hero-section { text-align: center; margin-bottom: 36px; }
+  .hero-section h1 { font-size: 34px; font-weight: 900; margin-bottom: 10px; }
+  .hero-section p { color: var(--text-muted); font-size: 16px; }
+
+  .auth-card {
+    max-width: 460px; margin: 0 auto; background: var(--bg-card);
+    border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+    padding: 30px; box-shadow: var(--shadow-subtle); position: relative; overflow: hidden;
+  }
+  .auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--primary-gradient); }
+
+  .tabs-group, .subtabs-group {
+    display: flex; background: var(--bg-main); border: 1px solid var(--border-color);
+    border-radius: var(--radius-md); padding: 5px; margin-bottom: 24px; gap: 4px;
+  }
+  .tab-btn, .subtab-btn {
+    flex: 1; text-align: center; padding: 10px; border-radius: 8px; border: none;
+    background: transparent; color: var(--text-muted); font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+  .tab-btn.active, .subtab-btn.active { background: var(--primary-glow); color: var(--primary); border: 1px solid rgba(79, 70, 229, 0.3); }
+
+  .input-group { margin-bottom: 16px; }
+  .input-group label { display: block; font-size: 13.5px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+  .input-group input, .input-group select, .input-group textarea {
+    width: 100%; padding: 13px 16px; border-radius: var(--radius-md);
+    border: 1px solid var(--border-color); background: var(--bg-main);
+    color: var(--text-main); font-size: 15px;
+  }
+  .input-group input[type="file"] { padding: 10px; cursor: pointer; }
+  .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+
+  .row-flex { display: flex; gap: 12px; }
+  .row-flex .input-group { flex: 1; }
+
+  .btn-primary {
+    width: 100%; padding: 14px; border: none; border-radius: var(--radius-md);
+    background: var(--primary-gradient); color: #fff; font-weight: 900; font-size: 16px;
+    cursor: pointer; box-shadow: 0 6px 20px var(--primary-glow); transition: all 0.2s ease; margin-top: 6px;
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+
+  .switch-auth { text-align: center; margin-top: 18px; font-size: 14px; color: var(--text-muted); }
+  .switch-auth a { color: var(--primary); cursor: pointer; font-weight: 700; text-decoration: none; }
+
+  .alert-box { padding: 12px 16px; border-radius: var(--radius-md); font-size: 14px; margin-bottom: 16px; font-weight: 600; }
+  .alert-box.error { background: var(--danger-bg); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .alert-box.success { background: var(--success-bg); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+  .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .section-header h2 { font-size: 26px; font-weight: 900; }
+  .section-header span { color: var(--text-muted); font-size: 14px; }
+
+  .lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .lesson-card {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow-subtle);
+  }
+  .lesson-badge-num {
+    width: 40px; height: 40px; border-radius: 10px; background: var(--primary-glow); color: var(--primary);
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Cairo', sans-serif; font-size: 16px; border: 1px solid rgba(79, 70, 229, 0.2);
+  }
+  .lesson-card h3 { font-size: 18px; font-weight: 800; }
+  .lesson-grade { font-size: 13px; color: var(--text-muted); }
+  .lesson-status { font-size: 13.5px; display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); }
+  .status-dot.unlocked { background: var(--success); box-shadow: 0 0 10px var(--success); }
+
+  .btn-lesson-action {
+    margin-top: auto; padding: 12px; border-radius: var(--radius-md);
+    border: 1px solid var(--primary); background: transparent; color: var(--primary);
+    font-weight: 800; font-size: 14px; cursor: pointer; text-align: center;
+  }
+  .btn-lesson-action.unlocked { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+  .btn-lesson-action.exam-required { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+
+  .history-btn {
+    display: flex; align-items: center; gap: 8px; background: var(--bg-card);
+    border: 1px solid var(--border-color); padding: 8px 14px; border-radius: var(--radius-md);
+    cursor: pointer; color: var(--text-main); font-weight: 700; font-size: 14px;
+  }
+  .history-drawer-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 300; display: flex; justify-content: flex-end;
+  }
+  .history-drawer {
+    width: 380px; max-width: 100%; background: var(--bg-card); height: 100%; padding: 24px;
+    display: flex; flex-direction: column; border-left: 1px solid var(--border-color); box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  }
+  .history-item { background: var(--bg-main); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); margin-bottom: 10px; }
+  .history-item-title { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
+  .history-item-time { font-size: 12px; color: var(--text-muted); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+  .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 30px; max-width: 450px; width: 100%; box-shadow: var(--shadow-subtle); }
+  
+  .video-container { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-subtle); }
+  .video-responsive { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--radius-md); overflow: hidden; background: #000; margin-top: 16px; }
+  .video-responsive video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 14px; font-weight: 700; background: none; border: none; cursor: pointer; margin-bottom: 20px; }
+
+  .dashboard-tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; flex-wrap: wrap; }
+  .dashboard-tab-btn { padding: 12px 24px; border: none; background: none; color: var(--text-muted); font-weight: 800; font-size: 15px; cursor: pointer; border-radius: var(--radius-md); }
+  .dashboard-tab-btn.active { background: var(--primary-glow); color: var(--primary); border: 1px solid rgba(79, 70, 229, 0.3); }
+  
+  .table-wrapper { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-subtle); margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: right; }
+  th, td { padding: 14px 18px; border-bottom: 1px solid var(--border-color); }
+  th { color: var(--text-muted); font-weight: 800; font-size: 13px; background: var(--bg-main); }
+  tr:last-child td { border-bottom: none; }
+  
+  .role-pill { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+  .role-pill.student { background: var(--primary-glow); color: var(--primary); }
+  .role-pill.parent { background: var(--warning-bg); color: var(--warning); }
+  
+  .add-lesson-box { background: var(--bg-card); border: 2px dashed var(--border-color); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; }
+  .btn-danger-sm { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--danger); background: var(--danger-bg); color: #F87171; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .btn-gold-sm { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--primary); background: var(--primary-glow); color: var(--primary); font-size: 13px; font-weight: 700; cursor: pointer; }
+  .btn-warning-sm { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--warning); background: var(--warning-bg); color: var(--warning); font-size: 13px; font-weight: 700; cursor: pointer; }
+  code.code-kbd { background: var(--bg-main); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color); font-family: monospace; color: var(--primary); font-weight: bold; letter-spacing: 1px; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 15px; }
+
+  .blocked-screen { text-align: center; padding: 60px 20px; background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); margin-top: 40px; }
+  .blocked-screen h2 { color: var(--danger); font-size: 28px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="footer">COPY RIGHT FOR ENG.MM</div>
+
+<script>
+const GRADES = [
+  "الصف الأول الإعدادي", 
+  "الصف الثاني الإعدادي", 
+  "الصف الثالث الإعدادي",
+  "الصف الأول الثانوي",
+  "الصف الثاني الثانوي",
+  "الصف الثالث الثانوي"
+];
+
+let state = {
+  loading: true,
+  currentUser: null,
+  view: 'landing',
+  authMode: 'login',
+  authRole: 'student',
+  topTab: 'student',
+  teacherExists: false,
+  errorMsg: '',
+  successMsg: '',
+  activeLessonId: null,
+  dashTab: 'users',
+  theme: 'dark',
+  showHistoryDrawer: false,
+  newLesson: { title: '', grade: GRADES[0], videoFileUrl: '', codesCount: 100, examUrl: '' },
+  usersDb: {},
+  lessonsDb: [],
+  unlocksDb: {},
+  viewsDb: {},
+  historyDb: {},
+  examsDb: {}, 
+  notesDb: {}, 
+  blockedDb: {} 
+};
+
+function render() { 
+  document.getElementById('app').innerHTML = App(); 
+}
+
+function esc(s) { return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function safeGet(key, shared) {
+  try { const r = await window.storage.get(key, shared); return r ? r.value : null; } catch (e) { return null; }
+}
+async function safeSet(key, value, shared) {
+  try { return await window.storage.set(key, value, shared); } catch (e) { return null; }
+}
+
+async function loadAll() {
+  state.loading = true; render();
+  const [teacherRaw, usersRaw, lessonsRaw, unlocksRaw, viewsRaw, historyRaw, examsRaw, notesRaw, blockedRaw] = await Promise.all([
+    safeGet('teacher-account', true),
+    safeGet('users-db', true),
+    safeGet('lessons-db', true),
+    safeGet('unlocks-db', true),
+    safeGet('views-db', true),
+    safeGet('history-db', true),
+    safeGet('exams-db', true),
+    safeGet('notes-db', true),
+    safeGet('blocked-db', true)
+  ]);
+  
+  state.teacherExists = !!teacherRaw;
+  state.teacherAccount = teacherRaw ? JSON.parse(teacherRaw) : null;
+  state.usersDb = usersRaw ? JSON.parse(usersRaw) : {};
+  state.lessonsDb = lessonsRaw ? JSON.parse(lessonsRaw) : [];
+  state.unlocksDb = unlocksRaw ? JSON.parse(unlocksRaw) : {};
+  state.viewsDb = viewsRaw ? JSON.parse(viewsRaw) : {};
+  state.historyDb = historyRaw ? JSON.parse(historyRaw) : {};
+  state.examsDb = examsRaw ? JSON.parse(examsRaw) : {};
+  state.notesDb = notesRaw ? JSON.parse(notesRaw) : {};
+  state.blockedDb = blockedRaw ? JSON.parse(blockedRaw) : {};
+
+  state.loading = false;
+  render();
+}
+
+async function persistLessons() { await safeSet('lessons-db', JSON.stringify(state.lessonsDb), true); }
+async function persistUnlocks() { await safeSet('unlocks-db', JSON.stringify(state.unlocksDb), true); }
+async function persistViews() { await safeSet('views-db', JSON.stringify(state.viewsDb), true); }
+async function persistHistory() { await safeSet('history-db', JSON.stringify(state.historyDb), true); }
+async function persistExams() { await safeSet('exams-db', JSON.stringify(state.examsDb), true); }
+async function persistNotes() { await safeSet('notes-db', JSON.stringify(state.notesDb), true); }
+async function persistBlocked() { await safeSet('blocked-db', JSON.stringify(state.blockedDb), true); }
+
+function generateCustomCodes(count) {
+  const codes = {};
+  while(Object.keys(codes).length < count) {
+    let code = Math.floor(100000 + Math.random() * 900000).toString();
+    // القيمة تكون false بمعنى أن الكود غير مستخدم بعد
+    codes[code] = false;
+  }
+  return codes;
+}
+
+function toggleTheme() {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', state.theme);
+  render();
+}
+
+function TopBar() {
+  const u = state.currentUser;
+  return `
+  <div class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-logo">خ</div>
+      <div>
+        <div class="brand-title">منصة الخبير</div>
+        <div class="brand-subtitle">الأستاذ عبد المنعم رجب • اللغة العربية</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      ${u && u.role === 'student' ? `
+        <button class="history-btn" onclick="toggleHistoryDrawer(true)">☰ سجل المشاهدة</button>
+      ` : ''}
+      <button class="btn-icon" onclick="toggleTheme()" title="تغيير السمة">${state.theme === 'dark' ? '☀️' : '🌙'}</button>
+      ${u ? `
+        <div class="user-badge">${u.role==='teacher' ? '👨‍🏫' : (u.role==='student'?'🎓':'👪')} <b>${esc(u.name)}</b></div>
+        <button class="btn-ghost" onclick="logout()">تسجيل خروج</button>
+      ` : ''}
+    </div>
+  </div>`;
+}
+
+function App() {
+  if (state.loading) {
+    return TopBar() + `<div class="container"><div class="empty-state">جاري تحميل المنصة... ⚡</div></div>`;
+  }
+  let body = '';
+  if (!state.currentUser) body = LandingView();
+  else if (state.currentUser.role === 'teacher') body = TeacherDashboard();
+  else {
+    const studentPhone = state.currentUser.role === 'parent' ? getStudentPhoneByParent(state.currentUser) : state.currentUser.phone;
+    if (state.blockedDb[studentPhone]) {
+      body = `
+        <div class="blocked-screen">
+          <h2>🚫 تم حظر حسابك مؤقتاً من المنصة</h2>
+          <p style="color:var(--text-main); font-size:16px;">يرجى التواصل مع الأستاذ عبد المنعم رجب لمعرفة السبب وفك الحظر.</p>
+        </div>`;
+    } else if (state.currentUser.role === 'parent') {
+      body = ParentDashboard();
+    } else if (state.view === 'video') {
+      body = VideoView();
+    } else if (state.view === 'exam') {
+      body = ExamView();
+    } else {
+      body = StudentHome();
+    }
+  }
+
+  return TopBar() + `<div class="container">${body}</div>` + 
+         (state.activeLessonId !== null && state.view !== 'video' && state.view !== 'exam' ? CodeModal() : '') +
+         (state.showHistoryDrawer ? HistoryDrawer() : '');
+}
+
+function getStudentPhoneByParent(parentUser) {
+  for(let p in state.usersDb) {
+    let u = state.usersDb[p];
+    if(u.role === 'student' && (u.parentPhone === parentUser.phone || u.name === parentUser.childName)) {
+      return p;
+    }
+  }
+  return parentUser.phone; 
+}
+
+function LandingView() {
+  return `
+  <div class="hero-section">
+    <h1>مع الخبير العربي اسهل بكتير</h1>
+    <p>سجّل دخولك أو أنشئ حساب جديد للوصول لدروس الأستاذ عبد المنعم رجب</p>
+  </div>
+  <div class="auth-card">
+    <div class="tabs-group">
+      <button class="tab-btn ${state.topTab==='student'?'active':''}" onclick="setTopTab('student')">طالب / ولي أمر</button>
+      <button class="tab-btn ${state.topTab==='teacher'?'active':''}" onclick="setTopTab('teacher')">المستر</button>
+    </div>
+    ${state.topTab==='student' ? StudentAuthArea() : TeacherAuthArea()}
+  </div>`;
+}
+
+function StudentAuthArea() {
+  const isLogin = state.authMode === 'login';
+  return `
+    <div class="subtabs-group">
+      <button class="subtab-btn ${state.authRole==='student'?'active':''}" onclick="setAuthRole('student')">🎓 طالب</button>
+      <button class="subtab-btn ${state.authRole==='parent'?'active':''}" onclick="setAuthRole('parent')">👪 ولي أمر</button>
+    </div>
+    ${state.errorMsg ? `<div class="alert-box error">${esc(state.errorMsg)}</div>` : ''}
+    ${state.successMsg ? `<div class="alert-box success">${esc(state.successMsg)}</div>` : ''}
+    <form onsubmit="return handleStudentAuthSubmit(event)">
+      ${isLogin ? `
+        <div class="input-group"><label>رقم الموبايل</label><input required id="f_phone" type="tel" placeholder="01xxxxxxxxx"></div>
+        <div class="input-group"><label>كلمة السر</label><input required id="f_pass" type="password" placeholder="••••••••"></div>
+      ` : (state.authRole==='student' ? StudentRegisterFields() : ParentRegisterFields())}
+      <button class="btn-primary" type="submit">${isLogin ? 'تسجيل الدخول' : 'إنشاء الحساب'}</button>
+    </form>
+    <div class="switch-auth">
+      ${isLogin ? 'مش معاك حساب؟' : 'عندك حساب فعلاً؟'}
+      <a onclick="toggleAuthMode()">${isLogin ? 'اعمل حساب جديد' : 'سجّل دخولك'}</a>
+    </div>
+  `;
+}
+
+function StudentRegisterFields() {
+  return `
+    <div class="input-group"><label>اسم الطالب</label><input required id="f_name" placeholder="الاسم بالكامل"></div>
+    <div class="row-flex">
+      <div class="input-group"><label>رقم موبايل الطالب</label><input required id="f_phone" type="tel" placeholder="01xxxxxxxxx"></div>
+      <div class="input-group"><label>كلمة السر</label><input required id="f_pass" type="password" placeholder="••••••••"></div>
+    </div>
+    <div class="input-group"><label>الصف الدراسي</label>
+      <select id="f_grade">${GRADES.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('')}</select>
+    </div>
+    <div class="input-group"><label>رقم موبايل ولي الأمر</label><input required id="f_parentphone" type="tel" placeholder="01xxxxxxxxx"></div>
+  `;
+}
+
+function ParentRegisterFields() {
+  return `
+    <div class="input-group"><label>اسم ولي الأمر</label><input required id="f_name" placeholder="الاسم بالكامل"></div>
+    <div class="row-flex">
+      <div class="input-group"><label>رقم الموبايل</label><input required id="f_phone" type="tel" placeholder="01xxxxxxxxx"></div>
+      <div class="input-group"><label>كلمة السر</label><input required id="f_pass" type="password" placeholder="••••••••"></div>
+    </div>
+    <div class="input-group"><label>اسم الابن / الابنة (نفس اسم الطالب)</label><input required id="f_childname" placeholder="اسم الطالب بالكامل"></div>
+    <div class="input-group"><label>صف الابن / الابنة</label>
+      <select id="f_childgrade">${GRADES.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('')}</select>
+    </div>
+  `;
+}
+
+function TeacherAuthArea() {
+  const setup = !state.teacherExists;
+  return `
+    ${state.errorMsg ? `<div class="alert-box error">${esc(state.errorMsg)}</div>` : ''}
+    ${setup ? `<div class="alert-box success">أنشئ حساب المستر الأول ليتم حفظه بأمان.</div>` : ''}
+    <form onsubmit="return handleTeacherAuthSubmit(event)">
+      <div class="input-group"><label>اسم المستخدم</label><input required id="t_user" placeholder="مثلاً: abdelmoneam"></div>
+      <div class="input-group"><label>كلمة السر</label><input required id="t_pass" type="password" placeholder="••••••••"></div>
+      <button class="btn-primary" type="submit">${setup ? 'إنشاء حساب المستر' : 'تسجيل الدخول'}</button>
+    </form>
+  `;
+}
+
+function StudentHome() {
+  const u = state.currentUser;
+  const grade = u.grade;
+  const lessons = state.lessonsDb.filter(l => l.grade === grade).sort((a,b)=> (a.order||0)-(b.order||0));
+  const unlocks = state.unlocksDb[u.phone] || [];
+  
+  return `
+    <div class="section-header">
+      <h2>دروس ${esc(grade)}</h2>
+      <span>امتحن أولاً (لو وجد) ثم أدخل الكود لفتح وحفظ الدرس</span>
+    </div>
+    ${lessons.length===0 ? `<div class="empty-state">لا توجد دروس متاحة لهذا الصف حالياً.</div>` : `
+    <div class="lessons-grid">
+      ${lessons.map((l,i)=>{
+        const unlocked = unlocks.includes(l.id);
+        const hasExam = !!l.examUrl;
+        const examData = (state.examsDb[u.phone] && state.examsDb[u.phone][l.id]) || null;
+        const examDone = !hasExam || (examData && examData.submitted);
+
+        let actionBtnText = '🔒 إدخال كود التفعيل';
+        let actionClass = '';
+        let actionClick = `openCodeModal('${l.id}')`;
+
+        if(unlocked) {
+          actionBtnText = '▶ مشاهدة الدرس الآن';
+          actionClass = 'unlocked';
+          actionClick = `openVideo('${l.id}')`;
+        } else if(!examDone) {
+          actionBtnText = '📝 ادخل الامتحان المطلوب أولاً';
+          actionClass = 'exam-required';
+          actionClick = `openExam('${l.id}')`;
+        }
+
+        return `
+        <div class="lesson-card">
+          <div class="lesson-badge-num">${i+1}</div>
+          <h3>${esc(l.title)}</h3>
+          <div class="lesson-grade">${esc(l.grade)}</div>
+          <div class="lesson-status">
+            <span class="status-dot ${unlocked?'unlocked':''}"></span>
+            ${unlocked ? 'الدرس متاح للمشاهدة' : (hasExam && !examDone ? 'مطلوب حل امتحان الجوجل فورم أولاً' : 'جاهز لإدخال كود التفعيل')}
+          </div>
+          <button class="btn-lesson-action ${actionClass}" onclick="${actionClick}">
+            ${actionBtnText}
+          </button>
+        </div>`;
+      }).join('')}
+    </div>`}
+  `;
+}
+
+function ParentDashboard() {
+  const pUser = state.currentUser;
+  const studentPhone = getStudentPhoneByParent(pUser);
+  const student = state.usersDb[studentPhone] || { name: pUser.childName, grade: pUser.childGrade, phone: 'غير مرتبط برقم صحيح بعد' };
+  const lessons = state.lessonsDb.filter(l => l.grade === student.grade).sort((a,b)=> (a.order||0)-(b.order||0));
+  const unlocks = state.unlocksDb[studentPhone] || [];
+  const views = state.viewsDb[studentPhone] || {};
+  const exams = state.examsDb[studentPhone] || {};
+  const note = state.notesDb[studentPhone] || 'لا توجد ملاحظات حالياً من المستر.';
+
+  return `
+    <div class="section-header">
+      <h2>👨‍‍👩‍👦 جدول متابعة الطالب: ${esc(student.name)}</h2>
+      <span>الصف: ${esc(student.grade)}</span>
+    </div>
+
+    <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:24px; box-shadow:var(--shadow-subtle);">
+      <h3 style="font-size:16px; margin-bottom:8px; color:var(--primary);">📌 ملاحظات الأستاذ عبد المنعم رجب على الطالب:</h3>
+      <p style="color:var(--text-main); font-size:15px; font-weight:600;">${esc(note)}</p>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>عنوان الدرس</th>
+            <th>حالة فتح الحصة</th>
+            <th>وقت فتح المشاهدة</th>
+            <th>درجة امتحان جوجل فورم</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${lessons.length === 0 ? `<tr><td colspan="5" class="empty-state">لا توجد دروس حالياً.</td></tr>` : lessons.map((l, idx) => {
+            const isUnlocked = unlocks.includes(l.id);
+            const watchTime = views[l.id] || 'لم يشاهد بعد';
+            const examInfo = exams[l.id];
+            return `
+              <tr>
+                <td><b>${idx+1}</b></td>
+                <td><b>${esc(l.title)}</b></td>
+                <td>
+                  <span class="role-pill ${isUnlocked ? 'student' : 'parent'}" style="background:${isUnlocked ? 'var(--success-bg)' : 'var(--danger-bg)'}; color:${isUnlocked ? 'var(--success)' : 'var(--danger)'}">
+                    ${isUnlocked ? '✅ فتح الحصة' : '🔒 لم تفتح بعد'}
+                  </span>
+                </td>
+                <td style="color:var(--text-muted);">${esc(watchTime)}</td>
+                <td>
+                  ${examInfo ? `<code class="code-kbd">${esc(examInfo.score)}</code>` : (l.examUrl ? '<span style="color:var(--warning)">لم يمتحن بعد</span>' : '<span style="color:var(--text-muted)">لا يوجد امتحان</span>')}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function ExamView() {
+  const lesson = state.lessonsDb.find(l => l.id === state.activeLessonId);
+  if(!lesson) return `<div class="empty-state">الدرس غير موجود</div>`;
+
+  return `
+    <button class="btn-back" onclick="backToHome()">← العودة لقائمة الدروس</button>
+    <div class="video-container" style="text-align:center;">
+      <h2>📝 امتحان الدرس: ${esc(lesson.title)}</h2>
+      <p style="color:var(--text-muted); margin-bottom:16px;">يرجى حل الامتحان أدناه على نموذج جوجل فورم، ثم تسجيل درجتك لتتمكن من فتح الحصة.</p>
+      
+      <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:20px; margin-bottom:20px;">
+        <iframe src="${esc(lesson.examUrl)}" width="100%" height="450px" style="border:none; border-radius:8px;">جاري تحميل الامتحان...</iframe>
+      </div>
+
+      <div style="max-width:400px; margin:0 auto; background:var(--bg-main); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+        <h3 style="font-size:16px; margin-bottom:10px;">أدخل درجتك التي حصلت عليها في النموذج (مثلاً: 10/10 أو 8/10):</h3>
+        <div class="input-group"><input id="exam_score_input" placeholder="مثال: 10/10"></div>
+        <button class="btn-primary" onclick="submitExamScore('${lesson.id}')">تأكيد وإرسال الدرجة للمستر</button>
+      </div>
+    </div>
+  `;
+}
+
+async function submitExamScore(lessonId) {
+  const score = document.getElementById('exam_score_input').value.trim();
+  if(!score) { alert('أدخل الدرجة أولاً!'); return; }
+  
+  const u = state.currentUser;
+  if(!state.examsDb[u.phone]) state.examsDb[u.phone] = {};
+  state.examsDb[u.phone][lessonId] = { score, submitted: true };
+  await persistExams();
+  
+  alert('تم تسجيل درجتك بنجاح! يمكنك الآن إدخال كود التفعيل لفتح الدرس.');
+  backToHome();
+}
+
+function HistoryDrawer() {
+  const u = state.currentUser;
+  const history = (state.historyDb[u.phone] || []).slice().reverse();
+  return `
+  <div class="history-drawer-overlay" onclick="if(event.target===this) toggleHistoryDrawer(false)">
+    <div class="history-drawer">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="font-size:18px; font-weight:900;">📜 سجل الفيديوهات المشاهدة</h3>
+        <button class="btn-ghost" onclick="toggleHistoryDrawer(false)">✕ إغلاق</button>
+      </div>
+      <div style="flex:1; overflow-y:auto;">
+        ${history.length === 0 ? `<div class="empty-state">لم تقم بمشاهدة أي درس حتى الآن.</div>` : history.map(h => `
+          <div class="history-item">
+            <div class="history-item-title">${esc(h.title)}</div>
+            <div class="history-item-time">🕒 ${esc(h.time)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function CodeModal() {
+  const lesson = state.lessonsDb.find(l=>l.id===state.activeLessonId);
+  if(!lesson) return '';
+  return `
+  <div class="modal-overlay" onclick="if(event.target===this) closeCodeModal()">
+    <div class="modal-box">
+      <h3>${esc(lesson.title)}</h3>
+      <p>أدخل كود التفعيل (أرقام) لفتح هذا الدرس</p>
+      ${state.codeError ? `<div class="alert-box error">${esc(state.codeError)}</div>` : ''}
+      <div class="input-group"><input id="code_input" type="number" placeholder="اكتب كود الأرقام هنا..." autofocus></div>
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button class="btn-ghost" style="flex:1" onclick="closeCodeModal()">إلغاء</button>
+        <button class="btn-primary" style="flex:1; margin-top:0" onclick="submitCode()">تحقق وفتح</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function VideoView() {
+  const lesson = state.lessonsDb.find(l=>l.id===state.activeLessonId);
+  if(!lesson) return `<div class="empty-state">الدرس غير موجود</div>`;
+  return `
+    <button class="btn-back" onclick="backToHome()">← العودة لقائمة الدروس</button>
+    <div class="video-container">
+      <h2 style="margin-top:0">${esc(lesson.title)}</h2>
+      <div class="video-responsive">
+        <video controls controlsList="nodownload" src="${esc(lesson.videoUrl)}">متصفحك لا يدعم عرض الفيديو</video>
+      </div>
+    </div>
+  `;
+}
+
+function TeacherDashboard() {
+  return `
+    <div class="dashboard-tabs">
+      <button class="dashboard-tab-btn ${state.dashTab==='users'?'active':''}" onclick="setDashTab('users')">الطلبة والبلوك والملاحظات (${Object.keys(state.usersDb).length})</button>
+      <button class="dashboard-tab-btn ${state.dashTab==='lessons'?'active':''}" onclick="setDashTab('lessons')">الدروس والأكواد (${state.lessonsDb.length})</button>
+      <button class="dashboard-tab-btn ${state.dashTab==='views'?'active':''}" onclick="setDashTab('views')">متابعة المشاهدات والامتحانات 👁️</button>
+    </div>
+    ${state.dashTab==='users' ? UsersTable() : (state.dashTab==='lessons' ? LessonsManager() : ViewsTrackerTable())}
+  `;
+}
+
+function UsersTable() {
+  const list = Object.values(state.usersDb).sort((a,b)=> (a.createdAt||0)-(b.createdAt||0));
+  if(list.length===0) return `<div class="empty-state">لا توجد حسابات مسجلة حتى الآن.</div>`;
+  return `
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>نوع الحساب</th><th>الاسم</th><th>رقم الموبايل</th><th>الصف الدراسي</th><th>الحالة والتحكم بالبلوك</th><th>ملاحظات المستر</th></tr></thead>
+      <tbody>
+        ${list.map(u=>{
+          const isBlocked = !!state.blockedDb[u.phone];
+          const noteText = state.notesDb[u.phone] || '';
+          return `
+          <tr>
+            <td><span class="role-pill ${u.role}">${u.role==='student'?'طالب':'ولي أمر'}</span></td>
+            <td><b>${esc(u.name)}</b></td>
+            <td>${esc(u.phone)}</td>
+            <td>${esc(u.role==='student'? u.grade : u.childGrade)}</td>
+            <td>
+              ${isBlocked ? `
+                <span style="color:var(--danger); font-weight:bold; display:block; margin-bottom:6px;">🚫 محظور</span>
+                <button class="btn-gold-sm" onclick="toggleBlock('${u.phone}', false)">فك البلوك</button>
+              ` : `
+                <span style="color:var(--success); font-weight:bold; display:block; margin-bottom:6px;">🟢 متاح</span>
+                <button class="btn-danger-sm" onclick="toggleBlock('${u.phone}', true)">حظر الطالب</button>
+              `}
+            </td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <input id="note_${u.phone}" value="${esc(noteText)}" placeholder="اكتب ملاحظة..." style="font-size:13px; padding:6px 10px;">
+                <button class="btn-gold-sm" onclick="saveStudentNote('${u.phone}')">حفظ</button>
+              </div>
+            </td>
+          </tr>
+        `;}).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+async function toggleBlock(phone, blockStatus) {
+  state.blockedDb[phone] = blockStatus;
+  await persistBlocked();
+  render();
+}
+
+async function saveStudentNote(phone) {
+  const val = document.getElementById('note_' + phone).value.trim();
+  state.notesDb[phone] = val;
+  await persistNotes();
+  alert('تم حفظ ملاحظة المستر بنجاح!');
+  render();
+}
+
+function ViewsTrackerTable() {
+  const viewsList = [];
+  Object.keys(state.usersDb).forEach(phone => {
+    const user = state.usersDb[phone];
+    if(user && user.role === 'student') {
+      state.lessonsDb.forEach(lesson => {
+        const unlocked = (state.unlocksDb[phone] || []).includes(lesson.id);
+        const watched = (state.viewsDb[phone] && state.viewsDb[phone][lesson.id]) || null;
+        const exam = (state.examsDb[phone] && state.examsDb[phone][lesson.id]) || null;
+        
+        viewsList.push({
+          studentName: user.name,
+          phone: user.phone,
+          grade: user.grade,
+          lessonTitle: lesson.title,
+          unlocked,
+          watchedAt: watched || 'لم يشاهد بعد',
+          examScore: exam ? exam.score : (lesson.examUrl ? 'لم يمتحن' : 'بدون امتحان')
+        });
+      });
+    }
+  });
+
+  if(viewsList.length === 0) return `<div class="empty-state">لا توجد أي بيانات متابعة للطلاب حتى الآن.</div>`;
+  return `
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>اسم الطالب</th><th>رقم الموبايل</th><th>الدرس</th><th>فتح الحصة؟</th><th>وقت المشاهدة</th><th>درجة امتحان جوجل فورم</th></tr></thead>
+      <tbody>
+        ${viewsList.map(v => `
+          <tr>
+            <td><b>${esc(v.studentName)}</b></td>
+            <td>${esc(v.phone)}</td>
+            <td>${esc(v.lessonTitle)}</td>
+            <td>
+              <span class="role-pill" style="background:${v.unlocked?'var(--success-bg)':'var(--danger-bg)'}; color:${v.unlocked?'var(--success)':'var(--danger)'}">
+                ${v.unlocked ? '✅ متاح' : '🔒 مغلق'}
+              </span>
+            </td>
+            <td style="color:${v.watchedAt !== 'لم يشاهد بعد' ? 'var(--success)' : 'var(--text-muted)'}">${esc(v.watchedAt)}</td>
+            <td><code class="code-kbd">${esc(v.examScore)}</code></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function LessonsManager() {
+  const nl = state.newLesson;
+  return `
+    <div class="add-lesson-box">
+      <h3>➕ إضافة درس جديد، رابط امتحان جوجل فورم، وعدد الأكواد الرقمية</h3>
+      <div class="row-flex">
+        <div class="input-group"><label>عنوان الدرس</label><input id="nl_title" value="${esc(nl.title)}" placeholder="مثلاً: النحو - الفاعل والمفعول به"></div>
+        <div class="input-group"><label>الصف الدراسي</label>
+          <select id="nl_grade">${GRADES.map(g=>`<option value="${esc(g)}" ${nl.grade===g?'selected':''}>${esc(g)}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="row-flex">
+        <div class="input-group"><label>عدد الأكواد المطلوبة (أرقام)</label><input type="number" id="nl_count" value="${nl.codesCount}" min="1" max="1000"></div>
+        <div class="input-group"><label>رابط امتحان جوجل فورم (اختياري)</label><input id="nl_exam" placeholder="https://forms.gle/xxxxxx"></div>
+      </div>
+      <div class="input-group"><label>اختر ملف الفيديو من الكمبيوتر</label><input type="file" id="nl_video_file" accept="video/*" onchange="handleFileSelect(event)"></div>
+      <button class="btn-primary" onclick="addLesson()">حفظ ونشر الدرس وتوليد الأكواد الرقمية</button>
+    </div>
+    ${state.lessonsDb.length===0 ? `<div class="empty-state">لم يتم إضافة دروس بعد.</div>` : state.lessonsDb.map(l=>LessonCodesCard(l)).join('')}
+  `;
+}
+
+function LessonCodesCard(l) {
+  const codes = l.studentCodes || {};
+  const codesList = Object.keys(codes);
+  return `
+    <div class="table-wrapper" style="margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border-color);flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-weight:900;font-size:16px;">${esc(l.title)} ${l.examUrl ? '📝 (يحتوي على امتحان)' : ''}</div>
+          <div style="color:var(--text-muted);font-size:13px;margin-top:2px;">${esc(l.grade)} • إجمالي الأكواد: ${codesList.length}</div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-gold-sm" onclick="printLessonCodes('${l.id}')">🖨 طباعة الأكواد الرقمية</button>
+          <button class="btn-danger-sm" onclick="deleteLesson('${l.id}')">حذف الدرس</button>
+        </div>
+      </div>
+      <div style="padding:16px 20px; max-height: 150px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 8px;">
+        ${codesList.slice(0, 30).map(c=>{
+          const isUsed = codes[c];
+          return `<code class="code-kbd" style="border-color:${isUsed ? 'var(--danger)' : 'var(--border-color)'}; opacity:${isUsed ? 0.6 : 1};" title="${isUsed ? 'مستخدم' : 'غير مستخدم'}">${c}${isUsed ? '❌' : ''}</code>`;
+        }).join('')}
+        ${codesList.length > 30 ? `<span style="color:var(--text-muted);align-self:center;font-size:13px;">... والمزيد</span>` : ''}
+      </div>
+    </div>`;
+}
+
+function printLessonCodes(lessonId) {
+  const l = state.lessonsDb.find(item => item.id === lessonId);
+  if(!l) return;
+  const codes = Object.keys(l.studentCodes || {});
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html dir="rtl"><head><title>أكواد: ${l.title}</title>
+    <style>body{font-family:Arial;padding:20px;} h1{text-align:center;font-size:20px;} .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;} .box{border:1px dashed #333;padding:8px;text-align:center;font-weight:bold;background:#f9f9f9;font-size:16px;letter-spacing:1px;}</style>
+    </head><body><h1>أكواد تفعيل منصة الخبير (أرقام) - ${l.title}</h1><div class="grid">${codes.map(c=>`<div class="box">${c}</div>`).join('')}</div>
+    <script>window.onload=function(){window.print();window.close();}<\/script></body></html>
+  `);
+  win.document.close();
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if(file) state.newLesson.videoFileUrl = URL.createObjectURL(file);
+}
+
+function setTopTab(tab) { state.topTab = tab; state.errorMsg = ''; state.successMsg = ''; render(); }
+function setAuthRole(role) { state.authRole = role; state.errorMsg = ''; state.successMsg = ''; render(); }
+function toggleAuthMode() { 
+  state.authMode = state.authMode === 'login' ? 'register' : 'login'; 
+  state.errorMsg = ''; 
+  state.successMsg = ''; 
+  render(); 
+}
+function setDashTab(tab) { state.dashTab = tab; render(); }
+function toggleHistoryDrawer(isOpen) { state.showHistoryDrawer = isOpen; render(); }
+
+async function handleTeacherAuthSubmit(e) {
+  e.preventDefault();
+  const u = document.getElementById('t_user').value.trim();
+  const p = document.getElementById('t_pass').value.trim();
+  if(!state.teacherExists) {
+    const acc = { user: u, pass: p };
+    await safeSet('teacher-account', JSON.stringify(acc), true);
+    state.teacherExists = true; state.teacherAccount = acc;
+    state.currentUser = { role: 'teacher', name: 'الأستاذ عبد المنعم رجب' };
+    state.view = 'teacherDashboard'; render();
+  } else {
+    if(u === state.teacherAccount.user && p === state.teacherAccount.pass) {
+      state.currentUser = { role: 'teacher', name: 'الأستاذ عبد المنعم رجب' };
+      state.view = 'teacherDashboard'; render();
+    } else {
+      state.errorMsg = 'بيانات المستر غير صحيحة!'; render();
+    }
+  }
+  return false;
+}
+
+async function handleStudentAuthSubmit(e) {
+  e.preventDefault();
+  state.errorMsg = ''; state.successMsg = '';
+  const isLogin = state.authMode === 'login';
+  const phone = document.getElementById('f_phone').value.trim();
+  const pass = document.getElementById('f_pass').value.trim();
+
+  if(isLogin) {
+    const user = state.usersDb[phone];
+    if(!user || user.pass !== pass) { state.errorMsg = 'رقم الموبايل أو كلمة السر خطأ!'; render(); return false; }
+    state.currentUser = user; render();
+  } else {
+    if(state.usersDb[phone]) { state.errorMsg = 'رقم الموبايل مسجل مسبقاً!'; render(); return false; }
+    const name = document.getElementById('f_name').value.trim();
+    let newUser = { phone, pass, name, role: state.authRole, createdAt: Date.now() };
+    if(state.authRole === 'student') {
+      newUser.grade = document.getElementById('f_grade').value;
+      newUser.parentPhone = document.getElementById('f_parentphone').value.trim();
+    } else {
+      newUser.childName = document.getElementById('f_childname').value.trim();
+      newUser.childGrade = document.getElementById('f_childgrade').value;
+    }
+    state.usersDb[phone] = newUser;
+    await safeSet('users-db', JSON.stringify(state.usersDb), true);
+    state.currentUser = newUser; render();
+  }
+  return false;
+}
+
+async function addLesson() {
+  const title = document.getElementById('nl_title').value.trim();
+  const grade = document.getElementById('nl_grade').value;
+  const count = parseInt(document.getElementById('nl_count').value) || 100;
+  const examUrl = document.getElementById('nl_exam').value.trim();
+  const videoUrl = state.newLesson.videoFileUrl;
+
+  if(!title || !videoUrl) { alert('أدخل عنوان الدرس واختار ملف الفيديو!'); return; }
+
+  const newId = 'lesson_' + Date.now();
+  const lessonObj = {
+    id: newId, title, grade, videoUrl, examUrl,
+    order: state.lessonsDb.length,
+    studentCodes: generateCustomCodes(count)
+  };
+
+  state.lessonsDb.push(lessonObj);
+  await persistLessons();
+  state.newLesson = { title: '', grade: GRADES[0], videoFileUrl: '', codesCount: 100, examUrl: '' };
+  alert('تم إضافة الدرس والامتحان والأكواد بنجاح! 🎉');
+  render();
+}
+
+async function deleteLesson(id) {
+  if(confirm('متأكد من حذف الدرس؟')) {
+    state.lessonsDb = state.lessonsDb.filter(l => l.id !== id);
+    await persistLessons(); render();
+  }
+}
+
+function openCodeModal(lessonId) { state.activeLessonId = lessonId; state.codeError = ''; render(); }
+function closeCodeModal() { state.activeLessonId = null; state.codeError = ''; render(); }
+
+function openExam(lessonId) {
+  state.activeLessonId = lessonId;
+  state.view = 'exam';
+  render();
+}
+
+async function submitCode() {
+  const codeVal = document.getElementById('code_input').value.trim();
+  const lesson = state.lessonsDb.find(l => l.id === state.activeLessonId);
+  
+  if(!lesson || !(codeVal in lesson.studentCodes)) {
+    state.codeError = 'الكود غير صحيح!'; render(); return;
+  }
+
+  // التحقق مما إذا كان الكود قد استخدم مسبقاً
+  if(lesson.studentCodes[codeVal] === true) {
+    state.codeError = 'هذا الكود تم استخدامه مسبقاً ولا يمكن استخدامه مرة أخرى!'; render(); return;
+  }
+
+  // تحديث حالة الكود ليصبح مستخدماً (True) لدرس واحد فقط
+  lesson.studentCodes[codeVal] = true;
+  await persistLessons();
+
+  const phone = state.currentUser.phone;
+  if(!state.unlocksDb[phone]) state.unlocksDb[phone] = [];
+  if(!state.unlocksDb[phone].includes(lesson.id)) state.unlocksDb[phone].push(lesson.id);
+  await persistUnlocks();
+  
+  const lid = state.activeLessonId;
+  closeCodeModal(); openVideo(lid);
+}
+
+async function openVideo(lessonId) {
+  state.activeLessonId = lessonId;
+  state.view = 'video';
+  
+  const u = state.currentUser;
+  const lesson = state.lessonsDb.find(l => l.id === lessonId);
+  if(u && u.role === 'student' && lesson) {
+    const timeStr = new Date().toLocaleString('ar-EG');
+    
+    if(!state.viewsDb[u.phone]) state.viewsDb[u.phone] = {};
+    state.viewsDb[u.phone][lessonId] = timeStr;
+    await persistViews();
+
+    if(!state.historyDb[u.phone]) state.historyDb[u.phone] = [];
+    state.historyDb[u.phone] = state.historyDb[u.phone].filter(h => h.id !== lessonId);
+    state.historyDb[u.phone].push({ id: lessonId, title: lesson.title, time: timeStr });
+    await persistHistory();
+  }
+  render();
+}
+
+function backToHome() { state.activeLessonId = null; state.view = 'studentHome'; render(); }
+function logout() { state.currentUser = null; state.view = 'landing'; state.activeLessonId = null; render(); }
+
+loadAll();
+</script>
+</body>
+</html>
