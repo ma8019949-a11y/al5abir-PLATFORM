@@ -1197,39 +1197,5 @@ function logout() { state.currentUser = null; state.view = 'landing'; state.acti
 
 loadAll();
 </script>
-
-<div style="position:fixed;bottom:15px;left:15px;z-index:99999;background:#172033;color:white;padding:15px;border-radius:12px;font-family:Arial">
-  <button onclick="testSupabase()" style="padding:10px;border:0;border-radius:8px;cursor:pointer">
-    اختبار اتصال قاعدة البيانات
-  </button>
-  <p id="connectionResult" style="margin:10px 0 0;font-size:14px">
-    اضغط الزر لاختبار الاتصال
-  </p>
-</div>
-
-<script>
-async function testSupabase() {
-  const result = document.getElementById("connectionResult");
-  result.textContent = "جاري الاختبار...";
-
-  try {
-    if (!window.supabase || typeof supabaseClient === "undefined") {
-      throw new Error("مكتبة Supabase أو إعداد الاتصال غير موجود");
-    }
-
-    const { error } = await supabaseClient
-      .from("student_groups")
-      .select("id")
-      .limit(1);
-
-    if (error) throw error;
-
-    result.textContent = "الاتصال ناجح ✅";
-  } catch (error) {
-    result.textContent = "فشل الاتصال: " + error.message;
-  }
-}
-</script>
-
 </body>
 </html>
