@@ -235,6 +235,7 @@
   .blocked-screen { text-align: center; padding: 60px 20px; background: var(--danger-bg); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); margin-top: 40px; }
   .blocked-screen h2 { color: var(--danger); font-size: 28px; margin-bottom: 14px; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -242,6 +243,76 @@
 <div class="footer">COPY RIGHT FOR ENG.MM</div>
 
 <script>
+
+const SUPABASE_URL = "https://mvykincoeacnpxfnwhoy.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_lW5ozoTMgENOU1ZEt8-Mzw_ygL2g-Cn";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+/* منصة الخبير — تسجيل الدخول عبر Supabase */
+
+async function signInWithSupabase(identifier, password) {
+  const login = identifier.trim();
+
+  if (!login || !password) {
+    throw new Error("اكتب بيانات تسجيل الدخول كاملة.");
+  }
+
+  const credentials = login.includes("@")
+    ? { email: login, password }
+    : { phone: login, password };
+
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword(credentials);
+
+  if (error) {
+    throw new Error("تعذر تسجيل الدخول: " + error.message);
+  }
+
+  const { data: profile, error: profileError } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, full_name, role")
+      .eq("id", data.user.id)
+      .single();
+
+  if (profileError) {
+    await supabaseClient.auth.signOut();
+    throw new Error("تعذر تحميل ملف المستخدم. راجع إعدادات قاعدة البيانات.");
+  }
+
+  return {
+    user: data.user,
+    profile: profile
+  };
+}
+
+/* استعادة جلسة المستخدم عند فتح المنصة */
+
+async function getSupabaseSession() {
+  const { data, error } =
+    await supabaseClient.auth.getSession();
+
+  if (error) {
+    throw new Error("تعذر استعادة جلسة تسجيل الدخول.");
+  }
+
+  return data.session;
+}
+
+/* تسجيل الخروج */
+
+async function signOutFromSupabase() {
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    throw new Error("تعذر تسجيل الخروج.");
+  }
+}
+
 const GRADES = [
   "الصف الأول الإعدادي", 
   "الصف الثاني الإعدادي", 
@@ -282,13 +353,28 @@ function render() {
 
 function esc(s) { return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+const STORAGE_PREFIX = "alkhabeer-platform:";
+
 async function safeGet(key, shared) {
-  try { const r = await window.storage.get(key, shared); return r ? r.value : null; } catch (e) { return null; }
-}
-async function safeSet(key, value, shared) {
-  try { return await window.storage.set(key, value, shared); } catch (e) { return null; }
+  try {
+    const value = localStorage.getItem(STORAGE_PREFIX + key);
+    return value;
+  } catch (error) {
+    console.error("خطأ في قراءة البيانات:", error);
+    return null;
+  }
 }
 
+async function safeSet(key, value, shared) {
+  try {
+    localStorage.setItem(STORAGE_PREFIX + key, value);
+    return true;
+  } catch (error) {
+    console.error("خطأ في حفظ البيانات:", error);
+    alert("تعذر حفظ البيانات على هذا الجهاز.");
+    return null;
+  }
+}
 async function loadAll() {
   state.loading = true; render();
   const [teacherRaw, usersRaw, lessonsRaw, unlocksRaw, viewsRaw, historyRaw, examsRaw, notesRaw, blockedRaw] = await Promise.all([
@@ -875,26 +961,66 @@ function toggleAuthMode() {
 function setDashTab(tab) { state.dashTab = tab; render(); }
 function toggleHistoryDrawer(isOpen) { state.showHistoryDrawer = isOpen; render(); }
 
-async function handleTeacherAuthSubmit(e) {
-  e.preventDefault();
+
+async function handleTeacherAuthSubmit(event) {
+  event.preventDefault();
+
   const u = document.getElementById('t_user').value.trim();
-  const p = document.getElementById('t_pass').value.trim();
-  if(!state.teacherExists) {
-    const acc = { user: u, pass: p };
-    await safeSet('teacher-account', JSON.stringify(acc), true);
-    state.teacherExists = true; state.teacherAccount = acc;
-    state.currentUser = { role: 'teacher', name: 'الأستاذ عبد المنعم رجب' };
-    state.view = 'teacherDashboard'; render();
-  } else {
-    if(u === state.teacherAccount.user && p === state.teacherAccount.pass) {
-      state.currentUser = { role: 'teacher', name: 'الأستاذ عبد المنعم رجب' };
-      state.view = 'teacherDashboard'; render();
-    } else {
-      state.errorMsg = 'بيانات المستر غير صحيحة!'; render();
-    }
+  const p = document.getElementById('t_pass').value;
+
+  if (!u || !p) {
+    state.errorMsg = 'ma8019949@gmail.com';
+    render();
+    return false;
   }
+
+  try {
+    // Supabase password login requires the registered email.
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: u,
+      password: p
+    });
+
+    if (error) throw error;
+
+    const { data: profile, error: profileError } =
+      await supabaseClient
+        .from('profiles')
+        .select('id, full_name, role')
+        .eq('id', data.user.id)
+        .single();
+
+    if (profileError) throw profileError;
+
+    if (profile.role !== 'teacher') {
+      await supabaseClient.auth.signOut();
+      throw new Error('الحساب ده مش مسجل كحساب مدرس.');
+    }
+
+    state.currentUser = {
+      id: data.user.id,
+      role: 'teacher',
+      name: profile.full_name || 'الأستاذ عبد المنعم رجب'
+    };
+
+    state.view = 'teacherDashboard';
+    state.errorMsg = '';
+    render();
+
+  } catch (error) {
+    console.error(error);
+    state.errorMsg =
+      error.message === 'Invalid login credentials'
+        ? 'الإيميل أو كلمة المرور غير صحيحة.'
+        : (error.message || 'حصل خطأ أثناء تسجيل الدخول.');
+    render();
+  }
+
   return false;
 }
+
+
+
 
 async function handleStudentAuthSubmit(e) {
   e.preventDefault();
@@ -1016,5 +1142,39 @@ function logout() { state.currentUser = null; state.view = 'landing'; state.acti
 
 loadAll();
 </script>
+
+<div style="position:fixed;bottom:15px;left:15px;z-index:99999;background:#172033;color:white;padding:15px;border-radius:12px;font-family:Arial">
+  <button onclick="testSupabase()" style="padding:10px;border:0;border-radius:8px;cursor:pointer">
+    اختبار اتصال قاعدة البيانات
+  </button>
+  <p id="connectionResult" style="margin:10px 0 0;font-size:14px">
+    اضغط الزر لاختبار الاتصال
+  </p>
+</div>
+
+<script>
+async function testSupabase() {
+  const result = document.getElementById("connectionResult");
+  result.textContent = "جاري الاختبار...";
+
+  try {
+    if (!window.supabase || typeof supabaseClient === "undefined") {
+      throw new Error("مكتبة Supabase أو إعداد الاتصال غير موجود");
+    }
+
+    const { error } = await supabaseClient
+      .from("student_groups")
+      .select("id")
+      .limit(1);
+
+    if (error) throw error;
+
+    result.textContent = "الاتصال ناجح ✅";
+  } catch (error) {
+    result.textContent = "فشل الاتصال: " + error.message;
+  }
+}
+</script>
+
 </body>
 </html>
