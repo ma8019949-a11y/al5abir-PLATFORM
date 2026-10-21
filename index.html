@@ -254,7 +254,6 @@ const supabaseClient = window.supabase.createClient(
 
 
 /* منصة الخبير — تسجيل الدخول عبر Supabase */
-
 async function signInWithSupabase(identifier, password) {
   const login = identifier.trim();
 
@@ -262,16 +261,34 @@ async function signInWithSupabase(identifier, password) {
     throw new Error("اكتب بيانات تسجيل الدخول كاملة.");
   }
 
-  const credentials = login.includes("@")
-    ? { email: login, password }
-    : { phone: login, password };
+  // تعديل تلقائي: إذا أدخل المستخدم رقم هاتف، نحوله لصيغة الإيميل المعتمدة بالمنصة
+  const emailLogin = login.includes("@") ? login : `${login}@alkhabeer.edu`;
 
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword(credentials);
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: emailLogin,
+    password: password
+  });
 
   if (error) {
     throw new Error("تعذر تسجيل الدخول: " + error.message);
   }
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name, role")
+    .eq("id", data.user.id)
+    .single();
+
+  if (profileError) {
+    await supabaseClient.auth.signOut();
+    throw new Error("تعذر تحميل ملف المستخدم. راجع إعدادات قاعدة البيانات.");
+  }
+
+  return {
+    user: data.user,
+    profile: profile
+  };
+}
 
   const { data: profile, error: profileError } =
     await supabaseClient
@@ -407,15 +424,17 @@ async function loadAll() {
     safeGet('notes-db', true),
     safeGet('blocked-db', true)
   ]);
-  async function loadStudentsFromSupabase() {
+  // جعل الدالة خاريجية لتجلب البيانات دائماً من Supabase
+async function loadStudentsFromSupabase() {
   const { data, error } = await supabaseClient
     .from('profiles')
-    .select(
-      'id, full_name, role, phone, grade, parent_phone, child_name, child_grade'
-    )
+    .select('id, full_name, role, phone, grade, parent_phone, child_name, child_grade')
     .in('role', ['student', 'parent']);
 
-  if (error) throw error;
+  if (error) {
+    console.error('خطأ Supabase:', error);
+    return;
+  }
 
   state.usersDb = {};
 
@@ -434,10 +453,29 @@ async function loadAll() {
     };
   }
 }
+
+// ثم في دالة loadAll استدعها مباشرة قبل render():
+async function loadAll() {
+  state.loading = true; 
+  render();
+
+  // جلب الطلاب دائماً فور فتح الصفحة لضمان المزامنة بين جميع الأجهزة
+  await loadStudentsFromSupabase();
+
+  const [teacherRaw, usersRaw, lessonsRaw, unlocksRaw, viewsRaw, historyRaw, examsRaw, notesRaw, blockedRaw] = await Promise.all([
+    safeGet('teacher-account', true),
+    safeGet('users-db', true),
+    safeGet('lessons-db', true),
+    safeGet('unlocks-db', true),
+    safeGet('views-db', true),
+    safeGet('history-db', true),
+    safeGet('exams-db', true),
+    safeGet('notes-db', true),
+    safeGet('blocked-db', true)
+  ]);
   
   state.teacherExists = !!teacherRaw;
   state.teacherAccount = teacherRaw ? JSON.parse(teacherRaw) : null;
-  state.usersDb = usersRaw ? JSON.parse(usersRaw) : {};
   state.lessonsDb = lessonsRaw ? JSON.parse(lessonsRaw) : [];
   state.unlocksDb = unlocksRaw ? JSON.parse(unlocksRaw) : {};
   state.viewsDb = viewsRaw ? JSON.parse(viewsRaw) : {};
