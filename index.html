@@ -252,6 +252,7 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_PUBLISHABLE_KEY
 );
 
+
 /* منصة الخبير — تسجيل الدخول عبر Supabase */
 
 async function signInWithSupabase(identifier, password) {
@@ -347,9 +348,27 @@ let state = {
   blockedDb: {} 
 };
 
-function render() { 
-  document.getElementById('app').innerHTML = App(); 
+let studentsLoaded = false;
+
+async function render() {
+  document.getElementById('app').innerHTML = App();
+
+  if (
+    state.currentUser?.role === 'teacher' &&
+    !studentsLoaded
+  ) {
+    studentsLoaded = true;
+
+    try {
+      await loadStudentsFromSupabase();
+      document.getElementById('app').innerHTML = App();
+    } catch (error) {
+      studentsLoaded = false;
+      console.error('خطأ تحميل الطلاب:', error);
+    }
+  }
 }
+
 
 function esc(s) { return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -388,6 +407,33 @@ async function loadAll() {
     safeGet('notes-db', true),
     safeGet('blocked-db', true)
   ]);
+  async function loadStudentsFromSupabase() {
+  const { data, error } = await supabaseClient
+    .from('profiles')
+    .select(
+      'id, full_name, role, phone, grade, parent_phone, child_name, child_grade'
+    )
+    .in('role', ['student', 'parent']);
+
+  if (error) throw error;
+
+  state.usersDb = {};
+
+  for (const p of data) {
+    if (!p.phone) continue;
+
+    state.usersDb[p.phone] = {
+      id: p.id,
+      phone: p.phone,
+      name: p.full_name,
+      role: p.role,
+      grade: p.grade,
+      parentPhone: p.parent_phone,
+      childName: p.child_name,
+      childGrade: p.child_grade
+    };
+  }
+}
   
   state.teacherExists = !!teacherRaw;
   state.teacherAccount = teacherRaw ? JSON.parse(teacherRaw) : null;
@@ -1037,33 +1083,113 @@ async function handleTeacherAuthSubmit(event) {
 
 async function handleStudentAuthSubmit(e) {
   e.preventDefault();
-  state.errorMsg = ''; state.successMsg = '';
+
+  state.errorMsg = '';
+  state.successMsg = '';
+
   const isLogin = state.authMode === 'login';
   const phone = document.getElementById('f_phone').value.trim();
-  const pass = document.getElementById('f_pass').value.trim();
+  const pass = document.getElementById('f_pass').value;
 
-  if(isLogin) {
-    const user = state.usersDb[phone];
-    if(!user || user.pass !== pass) { state.errorMsg = 'رقم الموبايل أو كلمة السر خطأ!'; render(); return false; }
-    state.currentUser = user; render();
-  } else {
-    if(state.usersDb[phone]) { state.errorMsg = 'رقم الموبايل مسجل مسبقاً!'; render(); return false; }
-    const name = document.getElementById('f_name').value.trim();
-    let newUser = { phone, pass, name, role: state.authRole, createdAt: Date.now() };
-    if(state.authRole === 'student') {
-      newUser.grade = document.getElementById('f_grade').value;
-      newUser.parentPhone = document.getElementById('f_parentphone').value.trim();
-    } else {
-      newUser.childName = document.getElementById('f_childname').value.trim();
-      newUser.childGrade = document.getElementById('f_childgrade').value;
-    }
-    state.usersDb[phone] = newUser;
-    await safeSet('users-db', JSON.stringify(state.usersDb), true);
-    state.currentUser = newUser; render();
+  if (!phone || !pass) {
+    state.errorMsg = 'اكتب رقم الموبايل وكلمة السر';
+    render();
+    return false;
   }
+
+  // رقم الموبايل هو اسم المستخدم الظاهر للطالب.
+  // البريد الداخلي وسيلة دخول فقط، وليس بريدًا حقيقيًا.
+  const email = `${phone.replace(/\D/g, '')}@alkhabeer.app`;
+
+  try {
+    let authData;
+
+    if (isLogin) {
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password: pass
+        });
+
+      if (error) throw error;
+      authData = data;
+    } else {
+      const name = document.getElementById('f_name').value.trim();
+
+      let profile = {
+        full_name: name,
+        phone,
+        role: state.authRole
+      };
+
+      if (state.authRole === 'student') {
+        profile.grade = document.getElementById('f_grade').value;
+        profile.parent_phone =
+          document.getElementById('f_parentphone').value.trim();
+      } else {
+        profile.child_name =
+          document.getElementById('f_childname').value.trim();
+        profile.child_grade =
+          document.getElementById('f_childgrade').value;
+      }
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password: pass
+      });
+
+      if (error) throw error;
+      authData = data;
+
+      if (!authData.session) {
+        throw new Error(
+          'الحساب اتسجل، لكن مفيش جلسة دخول. راجع إعدادات Auth.'
+        );
+      }
+
+      const { error: profileError } = await supabaseClient
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          ...profile
+        });
+
+      if (profileError) throw profileError;
+    }
+
+    const { data: profileData, error: readError } =
+      await supabaseClient
+        .from('profiles')
+        .select(
+          'id, full_name, role, phone, grade, parent_phone, child_name, child_grade'
+        )
+        .eq('id', authData.user.id)
+        .single();
+
+    if (readError) throw readError;
+
+    const p = profileData;
+
+    state.currentUser = {
+      id: p.id,
+      phone: p.phone || phone,
+      name: p.full_name,
+      role: p.role,
+      grade: p.grade,
+      parentPhone: p.parent_phone,
+      childName: p.child_name,
+      childGrade: p.child_grade
+    };
+
+    render();
+  } catch (error) {
+    console.error(error);
+    state.errorMsg = error.message || 'حصل خطأ أثناء التسجيل أو الدخول';
+    render();
+  }
+
   return false;
 }
-
 
 async function addLesson() {
   const title = document.getElementById('nl_title').value.trim();
