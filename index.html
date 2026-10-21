@@ -765,9 +765,17 @@ function VideoView() {
     <button class="btn-back" onclick="backToHome()">← العودة لقائمة الدروس</button>
     <div class="video-container">
       <h2 style="margin-top:0">${esc(lesson.title)}</h2>
-      <div class="video-responsive">
-        <video controls controlsList="nodownload" src="${esc(lesson.videoUrl)}">متصفحك لا يدعم عرض الفيديو</video>
-      </div>
+  
+<div class="video-responsive">
+    <iframe
+        src="${esc(lesson.videoUrl).replace('/view?usp=sharing', '/preview').replace('/view', '/preview')}"
+        width="100%"
+        height="450"
+        style="border:0; border-radius:12px;"
+        allow="autoplay; fullscreen"
+        allowfullscreen>
+    </iframe>
+</div>
     </div>
   `;
 }
@@ -899,7 +907,17 @@ function LessonsManager() {
         <div class="input-group"><label>عدد الأكواد المطلوبة (أرقام)</label><input type="number" id="nl_count" value="${nl.codesCount}" min="1" max="1000"></div>
         <div class="input-group"><label>رابط امتحان جوجل فورم (اختياري)</label><input id="nl_exam" placeholder="https://forms.gle/xxxxxx"></div>
       </div>
-      <div class="input-group"><label>اختر ملف الفيديو من الكمبيوتر</label><input type="file" id="nl_video_file" accept="video/*" onchange="handleFileSelect(event)"></div>
+     
+<div class="input-group">
+  <label for="nl_video_url">رابط فيديو الدرس من Google Drive</label>
+  <input
+    type="url"
+    id="nl_video_url"
+    placeholder="الصق رابط Google Drive هنا"
+    dir="ltr"
+  >
+</div>
+
       <button class="btn-primary" onclick="addLesson()">حفظ ونشر الدرس وتوليد الأكواد الرقمية</button>
     </div>
     ${state.lessonsDb.length===0 ? `<div class="empty-state">لم يتم إضافة دروس بعد.</div>` : state.lessonsDb.map(l=>LessonCodesCard(l)).join('')}
@@ -943,11 +961,6 @@ function printLessonCodes(lessonId) {
     <script>window.onload=function(){window.print();window.close();}<\/script></body></html>
   `);
   win.document.close();
-}
-
-function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if(file) state.newLesson.videoFileUrl = URL.createObjectURL(file);
 }
 
 function setTopTab(tab) { state.topTab = tab; state.errorMsg = ''; state.successMsg = ''; render(); }
@@ -1051,28 +1064,70 @@ async function handleStudentAuthSubmit(e) {
   return false;
 }
 
+
 async function addLesson() {
   const title = document.getElementById('nl_title').value.trim();
   const grade = document.getElementById('nl_grade').value;
   const count = parseInt(document.getElementById('nl_count').value) || 100;
   const examUrl = document.getElementById('nl_exam').value.trim();
-  const videoUrl = state.newLesson.videoFileUrl;
 
-  if(!title || !videoUrl) { alert('أدخل عنوان الدرس واختار ملف الفيديو!'); return; }
+  // قراءة رابط الفيديو من خانة الرابط الجديدة
+  const videoInput = document.getElementById('nl_video_url');
+  const rawVideoUrl = videoInput ? videoInput.value.trim() : '';
+
+  if (!title || !rawVideoUrl) {
+    alert('اكتب عنوان الدرس وحط رابط فيديو Google Drive!');
+    return;
+  }
+
+  // استخراج معرّف ملف Google Drive وتحويله لرابط عرض
+  const match = rawVideoUrl.match(
+    /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/
+  );
+
+  if (!match) {
+    alert('الرابط غير صحيح. انسخ رابط الفيديو من Google Drive.');
+    return;
+  }
+
+  const videoUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
 
   const newId = 'lesson_' + Date.now();
+
   const lessonObj = {
-    id: newId, title, grade, videoUrl, examUrl,
+    id: newId,
+    title,
+    grade,
+    videoUrl,
+    examUrl,
     order: state.lessonsDb.length,
     studentCodes: generateCustomCodes(count)
   };
 
   state.lessonsDb.push(lessonObj);
-  await persistLessons();
-  state.newLesson = { title: '', grade: GRADES[0], videoFileUrl: '', codesCount: 100, examUrl: '' };
-  alert('تم إضافة الدرس والامتحان والأكواد بنجاح! 🎉');
-  render();
+
+  try {
+    await persistLessons();
+
+    state.newLesson = {
+      title: '',
+      grade: GRADES[0],
+      videoFileUrl: '',
+      codesCount: 100,
+      examUrl: ''
+    };
+
+    if (videoInput) videoInput.value = '';
+
+    alert('تمت إضافة الدرس وحفظ بياناته! 🎉');
+    render();
+  } catch (error) {
+    state.lessonsDb.pop();
+    console.error(error);
+    alert('حصلت مشكلة أثناء حفظ الدرس. حاول مرة تانية.');
+  }
 }
+
 
 async function deleteLesson(id) {
   if(confirm('متأكد من حذف الدرس؟')) {
